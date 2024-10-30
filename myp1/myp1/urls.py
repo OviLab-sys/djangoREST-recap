@@ -15,8 +15,24 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api-auth/', include('rest_framework.urls', namespace= 'rest_framework')),
 ]
+
+#to create some simpe read-write API for accessing information omn the users of our project, we apply/do the following:
+from django.contrib.auth.models import User
+from rest_framework import routers, serializers, viewsets
+
+#serializers define the api representation.
+class UserSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = User
+        fields =  ['username', 'email', 'is_staff']
+
+#viewset define the behavior of the view
+class Userviewset(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
